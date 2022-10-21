@@ -1,8 +1,7 @@
 import {
-    Raycaster,
-    Vector2,
+    Color,
     Matrix4,
-    MeshBasicMaterial, MeshLambertMaterial
+    MeshBasicMaterial
 } from 'three';
 import { Fragment } from "../../library/dist/fragment";
 import { ThreeScene } from '../utils/scene';
@@ -61,13 +60,24 @@ function selectRandom(){
     const shuffled = fragment.items.sort(() => 0.5 - Math.random());
     const itemIds = shuffled.slice(0, 5);
 
-    highlightItems(fragment, itemIds);
+    const randomColor = new Color("#" + ((1<<24)*Math.random() | 0).toString(16));
+
+    colorItems(fragment, itemIds, randomColor);
 
 }
 
-function highlightItems(fragment, itemIds){
+function colorItems(fragment, itemIds, color){
 
-    const selection = fragment.fragments['selection'];
+    const colorMaterial = new MeshBasicMaterial({color: color, depthTest: false});
+
+    if(fragment.fragments['coloring'] != undefined){
+        fragment.fragments['coloring'].mesh.removeFromParent();
+        fragment.removeFragment("coloring");
+    }
+
+    fragment.addFragment('coloring', [colorMaterial]);
+
+    const selection = fragment.fragments['coloring'];
     threeScene.scene.add(selection.mesh);
 
     // Get instanceAndBlockId
