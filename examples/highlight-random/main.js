@@ -20,7 +20,7 @@ async function loadModels() {
 
     // Export
     const selectBtn = document.getElementById('select-random');
-    selectBtn.onclick = async () => selectRandom();
+    selectBtn.onclick = () => selectRandom();
 
     const items = {};
 
@@ -52,16 +52,22 @@ async function loadModels() {
     
 }
 
-async function selectRandom(){
-
-    // Reset previous selection (if any)
-    if(previousSelection != undefined) previousSelection.mesh.removeFromParent();
+function selectRandom(){
 
     // Get random fragment
     const fragment = fragments[Math.floor(Math.random()*fragments.length)];
 
     // Get random item
     const itemId = fragment.items[Math.floor(Math.random()*fragment.items.length)];
+
+    highlightItem(fragment, itemId);
+
+}
+
+function highlightItem(fragment, itemId){
+
+    // Reset previous selection (if any)
+    if(previousSelection != undefined) previousSelection.mesh.removeFromParent();
 
     previousSelection = fragment.fragments['selection'];
 
