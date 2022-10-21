@@ -60096,30 +60096,35 @@
 	    const fragment = fragments[Math.floor(Math.random()*fragments.length)];
 
 	    // Get random item
-	    const itemId = fragment.items[Math.floor(Math.random()*fragment.items.length)];
+	    const shuffled = fragment.items.sort(() => 0.5 - Math.random());
+	    const itemIds = shuffled.slice(0, 5);
 
-	    highlightItem(fragment, itemId);
+	    highlightItems(fragment, itemIds);
 
 	}
 
-	function highlightItem(fragment, itemId){
+	function highlightItems(fragment, itemIds){
 
 	    // Reset previous selection (if any)
 	    if(previousSelection != undefined) previousSelection.mesh.removeFromParent();
 
 	    previousSelection = fragment.fragments['selection'];
-
-	    // Select instance
 	    threeScene.scene.add(previousSelection.mesh);
-	    fragment.getInstance(itemId, tempMatrix);
-	    previousSelection.setInstance(0, {transform: tempMatrix});
-	    previousSelection.mesh.instanceMatrix.needsUpdate = true;
 
 	    // Get instanceAndBlockId
-	    const instanceAndBlockId = fragment.getInstanceAndBlockID(itemId);
+	    const instanceAndBlockIds = itemIds.map(itemId => fragment.getInstanceAndBlockID(itemId));
+	    const blockIds = instanceAndBlockIds.map(item => item.blockID);
+	    const instanceIds = instanceAndBlockIds.map(item => item.instanceID);
+
+	    // Select instances
+	    itemIds.forEach((itemId, i) => {
+	        fragment.getInstance(itemId, tempMatrix);
+	        previousSelection.setInstance(instanceIds[i], {transform: tempMatrix});
+	        previousSelection.mesh.instanceMatrix.needsUpdate = true;
+	    });
 
 	    // Add blockID (and reset previous)
-	    previousSelection.blocks.add([instanceAndBlockId.blockID], true);
+	    previousSelection.blocks.add(blockIds, true);
 
 	}
 
