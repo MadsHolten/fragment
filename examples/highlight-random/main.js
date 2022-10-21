@@ -10,6 +10,7 @@ import { Models } from '../utils/models';
 
 const threeScene = new ThreeScene();
 const models = new Models();
+const tempMatrix = new Matrix4();
 let previousSelection;
 loadModels();
 
@@ -54,7 +55,7 @@ async function loadModels() {
 async function selectRandom(){
 
     // Reset previous selection (if any)
-    if(previousSelection) previousSelection.mesh.removeFromParent();
+    if(previousSelection != undefined) previousSelection.mesh.removeFromParent();
 
     // Get random fragment
     const fragment = fragments[Math.floor(Math.random()*fragments.length)];
@@ -63,7 +64,12 @@ async function selectRandom(){
     const itemId = fragment.items[Math.floor(Math.random()*fragment.items.length)];
 
     previousSelection = fragment.fragments['selection'];
+
+    // Select instance
     threeScene.scene.add(previousSelection.mesh);
+    fragment.getInstance(itemId, tempMatrix);
+    previousSelection.setInstance(0, {transform: tempMatrix});
+    previousSelection.mesh.instanceMatrix.needsUpdate = true;
 
     // Get instanceAndBlockId
     const instanceAndBlockId = fragment.getInstanceAndBlockID(itemId);

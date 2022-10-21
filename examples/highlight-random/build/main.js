@@ -52316,7 +52316,7 @@
 
 	const aabb = /* @__PURE__ */ new Box3();
 	const aabb2 = /* @__PURE__ */ new Box3();
-	const tempMatrix = /* @__PURE__ */ new Matrix4();
+	const tempMatrix$1 = /* @__PURE__ */ new Matrix4();
 	const obb = /* @__PURE__ */ new OrientedBox();
 	const obb2 = /* @__PURE__ */ new OrientedBox();
 	const temp = /* @__PURE__ */ new Vector3$1();
@@ -52897,7 +52897,7 @@
 			const otherIndexAttr = otherBvh.geometry.index;
 			const otherPositionAttr = otherBvh.geometry.attributes.position;
 
-			tempMatrix.copy( matrixToLocal ).invert();
+			tempMatrix$1.copy( matrixToLocal ).invert();
 
 			const triangle = trianglePool.getPrimitive();
 			const triangle2 = trianglePool.getPrimitive();
@@ -52965,7 +52965,7 @@
 				intersectsRange: ( offset1, count1, contained, depth1, nodeIndex1, box ) => {
 
 					aabb.copy( box );
-					aabb.applyMatrix4( tempMatrix );
+					aabb.applyMatrix4( tempMatrix$1 );
 					return otherBvh.shapecast( {
 
 						intersectsBounds: box => aabb.intersectsBox( box ),
@@ -53048,8 +53048,8 @@
 			let closestDistance = Infinity;
 			let closestDistanceTriIndex = null;
 			let closestDistanceOtherTriIndex = null;
-			tempMatrix.copy( geometryToBvh ).invert();
-			obb2.matrix.copy( tempMatrix );
+			tempMatrix$1.copy( geometryToBvh ).invert();
+			obb2.matrix.copy( tempMatrix$1 );
 			this.shapecast(
 				{
 
@@ -53213,8 +53213,8 @@
 
 				if ( ! target2.point ) target2.point = tempTargetDest2.clone();
 				else target2.point.copy( tempTargetDest2 );
-				target2.point.applyMatrix4( tempMatrix );
-				tempTargetDest1.applyMatrix4( tempMatrix );
+				target2.point.applyMatrix4( tempMatrix$1 );
+				tempTargetDest1.applyMatrix4( tempMatrix$1 );
 				target2.distance = tempTargetDest1.sub( target2.point ).length();
 				target2.faceIndex = closestDistanceOtherTriIndex;
 
@@ -60048,6 +60048,7 @@
 
 	const threeScene = new ThreeScene();
 	const models = new Models();
+	const tempMatrix = new Matrix4();
 	let previousSelection;
 	loadModels();
 
@@ -60092,7 +60093,7 @@
 	async function selectRandom(){
 
 	    // Reset previous selection (if any)
-	    if(previousSelection) previousSelection.mesh.removeFromParent();
+	    if(previousSelection != undefined) previousSelection.mesh.removeFromParent();
 
 	    // Get random fragment
 	    const fragment = fragments[Math.floor(Math.random()*fragments.length)];
@@ -60101,7 +60102,12 @@
 	    const itemId = fragment.items[Math.floor(Math.random()*fragment.items.length)];
 
 	    previousSelection = fragment.fragments['selection'];
+
+	    // Select instance
 	    threeScene.scene.add(previousSelection.mesh);
+	    fragment.getInstance(itemId, tempMatrix);
+	    previousSelection.setInstance(0, {transform: tempMatrix});
+	    previousSelection.mesh.instanceMatrix.needsUpdate = true;
 
 	    // Get instanceAndBlockId
 	    const instanceAndBlockId = fragment.getInstanceAndBlockID(itemId);
