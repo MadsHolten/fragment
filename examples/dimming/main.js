@@ -2,9 +2,9 @@ import {
     Raycaster,
     Vector2,
     Matrix4,
-    MeshBasicMaterial, MeshLambertMaterial
+    MeshBasicMaterial
 } from 'three';
-import { Fragment } from "../../library/dist/fragment";
+import { Fragment } from "bim-fragment";
 import { ThreeScene } from '../utils/scene';
 import { Models } from '../utils/models';
 
@@ -93,3 +93,10 @@ async function loadModels() {
     }
 }
 
+// document.getElementById("btn").addEventListener("click", (ev) => {
+//     console.log(ev);
+// });
+
+// function dimAll(){
+//     console.log("XX")
+// }
